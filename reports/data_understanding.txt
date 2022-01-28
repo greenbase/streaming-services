@@ -1,0 +1,11 @@
+Vor Kurzem bin ich auf drei Datensätze zu bekannten Streaming-Anbietern gestoßen und habe mir vorgenommen daran ein (kleines) Data Science Projekt aufzuziehen. Das ganze Projekt in einem einzigen Blogpost unter zu bringen würde sicherlich das Durchhaltevermögen vieler Leser auf die Probe stellen. Daher werde ich daraus eine kleine Serie machen, in der sich jeder Blogpost nur mit einem kleinen Teil beschäftigt.
+ 
+Da die Daten schon auf meiner Festplatte warten, können wir direkt mit dem "Data Understanding" in dieses Projekt einsteigen.
+
+Wir werden uns anschauen mit welchen Informationen wir es zu tun haben. Insbesondere interessiert mich wie wir die drei Datensätze zu einem einzelnen zusammenfügen können. Für einen einfachen Vergleich der drei Streaming-Anbieter würde es bestimmt reichen einfach bei den separaten Datensätzen zu bleiben. Aber ich möchte mir die Möglichkeit offen halten weitere Auswertungen vornehmen zu können.
+
+Die drei Datensätze, die ich hier betrachte, enthalten jeweils Filme und Fernsehserien von Netflix, Amazon Prime Video und Disney+. Zum dem Zeitpunkt an dem die Datensätze erstellt wurden (2015) waren die drei Streamingkanäle die mit dem größten Marktanteilen; zumindest in der westlichen Welt. Hier sind die ersten fünf Einträge aus dem Netflixdatensatz.
+
+Die meisten der Merkmale sind recht selbsterklärend. Das Merkmal "type" beschreibt ob es sich um einen Film oder eine Serie handelt, "cast" die Liste der Schauspieler, "country" das Land in dem Sendung produziert wurde u.s.w. 
+
+Wir können die Merkmale grob in zwei Gruppen einteilen: in solche die nur von dem jeweiligen Film oder Serie abhängen und solche die von dem Streaminganbieter abhängen.
