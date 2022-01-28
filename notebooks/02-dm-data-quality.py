@@ -10,6 +10,7 @@
 # - Accuracy 
 
 # %%
+from multiprocessing.dummy import active_children
 from numpy.core.fromnumeric import shape
 import pandas as pd
 import numpy as np
@@ -32,20 +33,21 @@ assert all(netflix_data.columns==amazon_data.columns) & all(netflix_data.columns
 # Join Data Sets
 # For easier handling the three data sets are joined together.
 #%%
+# add service bins as features of each data set and drop redundant feature
 for service_name, service_data in zip(services,[netflix_data,amazon_data,disney_data]):
     service_data[service_name]=True
-data=pd.concat(data_set_collection.values())
-#%%
+    service_data.drop("show_id", axis=1,inplace=True)
+
+# merge data sets
+data=pd.concat([netflix_data,amazon_data,disney_data],axis=0,ignore_index=True)
+# replace None values in service bins with False
 for feature in data.columns[-3:]:
-    data[feature]=data[feature].replace(to_replace=np.NaN,value=False)
+    data[feature]=data[feature].replace(to_replace=np.NaN,value=False,)
 
 
 #service_features.replace(to_replace=None,value=0)
 #%% [markdown]
-# ## Uniqueness
-# Check if the data contains duplicates
-#%% [markdown]
-# ## Data Completeness
+# ## Completeness
 # ### Missing values per feature
 
 # As the follwing dataframes show, there is a significant amount of data missing for the features "director", "country" and "date_added". Note that for the later two features the amazon_data data set provides nearly no data.
@@ -90,3 +92,14 @@ missing_values_percent
 #%%[markdown]
 # # Uniqueness
 # No movie or TV show should appear in the data more than once
+#%%
+# TODO check if there are similar title due to spelling errors
+# %% 
+# check if there are any duplicates. This does not take text format or
+# spelling errors into account
+data["title"].duplicated().sum()
+# %%
+# duplicated titles
+data[data["title"].duplicated()]
+
+# TODO merge duplicates with groupby()
