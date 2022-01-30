@@ -1,11 +1,70 @@
-Vor Kurzem bin ich auf drei Datensätze zu bekannten Streaming-Anbietern gestoßen und habe mir vorgenommen daran ein (kleines) Data Science Projekt aufzuziehen. Das ganze Projekt in einem einzigen Blogpost unter zu bringen würde sicherlich das Durchhaltevermögen vieler Leser auf die Probe stellen. Daher werde ich daraus eine kleine Serie machen, in der sich jeder Blogpost nur mit einem kleinen Teil beschäftigt.
- 
-Da die Daten schon auf meiner Festplatte warten, können wir direkt mit dem "Data Understanding" in dieses Projekt einsteigen.
+Vor Kurzem bin ich auf drei Datensätze zu bekannten Streaming-Anbietern gestoßen
+und habe mir vorgenommen daran ein (kleines) Data Science Projekt aufzuziehen.
+Das ganze Projekt in einem einzigen Blogpost unter zu bringen würde sicherlich
+das Durchhaltevermögen vieler Leser auf die Probe stellen. Daher werde ich
+daraus eine kleine Serie machen, in der sich jeder Blogpost nur mit einem
+kleinen Teil beschäftigt.
 
-Wir werden uns anschauen mit welchen Informationen wir es zu tun haben. Insbesondere interessiert mich wie wir die drei Datensätze zu einem einzelnen zusammenfügen können. Für einen einfachen Vergleich der drei Streaming-Anbieter würde es bestimmt reichen einfach bei den separaten Datensätzen zu bleiben. Aber ich möchte mir die Möglichkeit offen halten weitere Auswertungen vornehmen zu können.
+In diesem Teil werden wir uns anschauen mit welchen Informationen wir es
+überhaupt zu tun haben und wir werden uns überlegen wie wir mit den Daten
+umgehen können. Insbesondere interessiert mich wie wir die drei Datensätze zu
+einem einzelnen zusammenfügen können. Für einen einfachen Vergleich der drei
+Streaming-Anbieter würde es bestimmt reichen einfach bei den separaten
+Datensätzen zu bleiben. Aber ich möchte mir die Möglichkeit offen halten weitere
+Auswertungen vornehmen zu können.
 
-Die drei Datensätze, die ich hier betrachte, enthalten jeweils Filme und Fernsehserien von Netflix, Amazon Prime Video und Disney+. Zum dem Zeitpunkt an dem die Datensätze erstellt wurden (2015) waren die drei Streamingkanäle die mit dem größten Marktanteilen; zumindest in der westlichen Welt. Hier sind die ersten fünf Einträge aus dem Netflixdatensatz.
+
+Ich möchte in diesem Artiel zwei Dinge tun: Erstens möchte ich einen Überblick
+bekommen, welche Infos uns die Datensätze zur Verfügung stellen. Und zweitens
+möchte ich festhalten was notwendig ist, um die einzelnen Datensätze zusammen zu
+fügen.
+
+Die drei Datensätze, die ich hier betrachte, enthalten jeweils Filme und
+Fernsehserien von Netflix, Amazon Prime Video oder Disney+. Zum dem Zeitpunkt an
+dem die Datensätze erstellt wurden (2015) waren die drei Streamingkanäle die mit
+dem größten Marktanteilen; zumindest in der westlichen Welt. Hier sind die
+ersten fünf Einträge aus dem Netflixdatensatz.
 
 Die meisten der Merkmale sind recht selbsterklärend. Das Merkmal "type" beschreibt ob es sich um einen Film oder eine Serie handelt, "cast" die Liste der Schauspieler, "country" das Land in dem Sendung produziert wurde u.s.w. 
 
-Wir können die Merkmale grob in zwei Gruppen einteilen: in solche die nur von dem jeweiligen Film oder Serie abhängen und solche die von dem Streaminganbieter abhängen.
+"date_added" gibt das Datum an an dem eine Sendung bei dem jeweiligen Streaminganbieter erschienen ist; "rating" ist die Altersfreigabe und "listed_in" ist eine Liste an Generes in die die Sendung einsortiert werden kann. Zu guter letzt gibt es noch zu jeder Sendung eine kurze Beschreibung unter "description". Mit Außnahme des Erscheinungsjahr ("release year") liegen alle Daten als Text vor. Selbst häufbare Merkmale wie "cast" oder "listed_in" verpacken ihre Einträge als Text; die einzelnen Merkmalsausprägungen werden durch Kommas getrennt. 
+
+Ein kurzer Blick in die anderen beiden Datensätze verrät uns, dass alle drei die gleichen Merkmale für ihre Sendungen aufführen. Das sind schon mal gute Vorraussetzungen, um alles in einem großen Datensatz zu stopfen.
+
+OK. So viel zu unserem Überblick über die Daten. Doch was müssen wir beachten, wenn wir die Sendungen von Netflix, Amazon und Disney+ in einer großen Tabelle sammeln wollen?
+
+Zu allererst müssen wir natürlich festhalten zu welchem Streaminganbieter eine Sendung gehört, wenn wir nicht mehr eine Datensatz pro Anbieter haben. Dafür legen wir am besten drei neue Merkmale "netflix", "amazon" und "disney" an, die beschreiben ob Sendung X bei diesem Streaminganbieterservice im Angebot ist oder nicht.
+
+Jetzt bliebt noch zu klären wie wir die übrigen Merkmale sinnvoll zu sammen
+führen können.
+
+Wir können die Merkmale grob in zwei Gruppen einteilen: Merkmale wie "title"
+oder "release_year" hängen allein von dem jeweiligen Film oder Serie
+ab. Daneben gibt es eine Gruppe von Merkmalen, die sowohl von der Sendung als auch von dem Streaminganbieter abhängen, der sie anbietet. Zu dieser Merkmalsgruppe gehören:
+
+- "date_added" - Datum am dem der Titel bei der jeweiligen Plattform hinzugefügt
+wurde
+- "listed_in" - Ein oder mehrere Generes zu dem die Sendung gehört
+- "description" - Eine kruze Beschreibung der Sendung
+
+Verfassen verschiedene Personen Beschreibungen für die selbe Sendung oder weisen
+sie einem Genere zu, dann kommen dabei wahrscheinlich unterschiedliche
+Ergebnisse bei heraus, weil hier die eigene Interpretation entscheidend ist.  
+
+Gut, aber was nützt uns, dass wir die Merkmale einere von beiden Gruppen zuweisen können? Sagen wir setzten alle drei Datensätze zusammen, sodass die neue Tabelle alle Sendungen aller drei Streaminganbieter enthält. Einige Sendungen werden aber von mehreren Plattformen angeboten und tauchen demnach mehrmals in der neuen Tabelle auf. Würden alle Merkmale nur von der Sendung selbst hängen wäre das gar kein Problem. Wir würden den "doppelten" Eintrag einfach löschen und vermerken, dass auch ein anderer Anbieter diese Sendung im Programm hat (z.B. netflix=True, amazon=True). Leider können wir so nicht vorgehen, weil sich erstens Werte eines Merkmals für eine Sendung von Plattform zu Plattform unterscheiden können und zweitens beide Datenpunkte valide sind. Es wäre z.B. unsinnig die Beschreibung bei Netflix als richtig und die bei Amazon als falsch zu bezeichnen.
+
+Wenn wir die Datensätze also zusammenfügen möchten, müssen wir Sendungen, die bei mehreren Anbietern im Programm sind verschmelzen. Für Merkmale, die nur von der Sendung selbst abhängen reicht es wenn wir einfach die Werte aus einem Datensatz übernehmen und die aus den anderen Datensätzen verwerfen. Werte die hingegen von der Sendung und dem Streaminganbieter anhängen, müssen in einem Datenpunkt zusammengeführt werden. Das können wir am besten erreichen indem wir jedes dieser Merkmal durch drei neue ersetzen; jeweils mit Bezug auf einen der drei Streaminganbieter. Anstelle von "date_added" verwenden wir "date_added_netflix", "date_added_amazon" und "date_added_disney". Damit erzeugen wir zwar eine Menge Zellen ohne Werte, dafür ist die Zuweisung der Daten eindeutig.
+
+Um die drei Datensätze zusammen zu fassen, müssen wir also folgender maßen vorgehen:
+
+1. Wir ergänzen jeden Datensatz um drei neue Spalten ("netflix", "amazon",
+"disney"), um die Zugehörigkeit der Sendungen zu den Streaminganbietern
+anzugeben
+
+2. In jedem Datensatz änder wir die Namen der Merkmale, die auch vom
+Streaminganbieter abhängen, sodass sie auf den entsprechenden Streaminganbieter
+verweisen. ("date_added" -> "date_added_netflix")
+
+3. Führen die Datensätze zusammen mit den Titeln als Schlüssel
+
+pd.merge(netflix, amzaon,disney, how=outer, key=title)
